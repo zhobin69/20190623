@@ -5,26 +5,16 @@ pipeline {
 		maven 'maven'
 	}
 	stages {
-		stage('Initialize') {
-			steps {
-				sh '''
-					echo "PATH=${PATH}"
-				'''
-			}
-		}
-		
 		stage('Build') {
 			steps {
-				sh 'echo ${PATH}'
-				sh 'echo "**************"'
-				sh 'mvn -version'
+				sh 'mvn clean install -Dmaven.test.failure.ignore=true'
 			}
-		
-			post {
-				success {
-					junit 'target/surefire-reports/**/*.xml'
-				}
-			}	
+		}
+	}
+	post {
+		always {
+			archive "target/**/*"
+			junit "target/surefire-reports/*.xml"
 		}
 	}
 }
